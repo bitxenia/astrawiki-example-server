@@ -1,15 +1,16 @@
 import { ArticleInfo, ExampleServerNode } from ".";
-import { VersionManager } from "@bitxenia/wiki-version-manager";
+import { VersionID, VersionManager } from "@bitxenia/wiki-version-manager";
 import { ArticleRepository } from "./articleRepository";
 
 export class ExampleServerEcosystem implements ExampleServerNode {
-  url: string;
   articleRepository: ArticleRepository;
   versionManager: VersionManager;
+  lastVersionFetchedByArticle: Map<string, VersionID>;
 
   async start(url: string): Promise<void> {
     console.log("Initializing");
     this.articleRepository = new ArticleRepository(url);
+    this.lastVersionFetchedByArticle = new Map();
   }
 
   async getArticle(
@@ -17,6 +18,11 @@ export class ExampleServerEcosystem implements ExampleServerNode {
     articleVersionID?: string,
   ): Promise<ArticleInfo> {
     const article = await this.articleRepository.getArticle(articleName);
+
+    this.lastVersionFetchedByArticle.set(
+      articleName,
+      article.getCurrentVersionID(),
+    );
 
     const articleContent = article.getContent(articleVersionID);
     const articleVersions = article.getVersions();
@@ -34,36 +40,34 @@ export class ExampleServerEcosystem implements ExampleServerNode {
     }
 
     await this.articleRepository.newArticle(articleName, articleContent);
-
-    // console.log(`Name: ${name}`);
-    // const { status } = version
-    //   ? await axios.post(`${URL}/articles/`, { name, version })
-    //   : await axios.post(`${URL}/articles/`, { name });
-    // if (status === HttpStatusCode.Conflict) {
-    //   throw Error("Article already exists");
-    // } else if (status !== HttpStatusCode.Created) {
-    //   throw Error(`Server error: ${status}`);
-    // }
-    // console.log("Article posted succesfully");
   }
 
   async editArticle(
     articleName: string,
     newArticleContent: string,
   ): Promise<void> {
-    // if (name.length === 0) {
-    //   throw Error("No name given");
-    // }
-    // const { status } = await axios.patch(`${URL}/articles/${name}`, version);
-    // if (status === HttpStatusCode.BadRequest) {
-    //   throw Error("Bad request while editing article");
-    // } else if (status === HttpStatusCode.NotFound) {
-    //   throw Error("Article to edit not found");
-    // }
+    if (articleName.length === 0) {
+      throw Error("No name given");
+    }
+
+    const lastVersionFetched =
+      this.lastVersionFetchedByArticle.get(articleName);
+
+    if (!lastVersionFetched) {
+      throw Error(
+        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`,
+      );
+    }
+
+    await this.articleRepository.addVersion(
+      articleName,
+      newArticleContent,
+      lastVersionFetched,
+    );
   }
 
   async getArticleList(): Promise<string[]> {
-    return [];
+    return this.articleRepository.getArticleList();
     // const { data } = await axios.get<string[]>(`${URL}/articles`);
     // return data;
   }
@@ -82,10 +86,6 @@ export class ExampleServerEcosystem implements ExampleServerNode {
     //   },
     // });
     // return data;
-  }
-
-  async stop(): Promise<void> {
-    // Nothing to stop
   }
 }
 

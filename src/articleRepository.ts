@@ -43,4 +43,32 @@ export class ArticleRepository {
       return Promise.reject(`Server error: ${status}`);
     }
   }
+
+  async addVersion(
+    articleName: string,
+    newArticleContent: string,
+    lastVersionFetched?: string,
+  ): Promise<void> {
+    const article = await this.getArticle(articleName);
+    const newVersion = article.newContent(
+      newArticleContent,
+      lastVersionFetched,
+    );
+
+    const { status } = await axios.patch(
+      `${this.url}/articles/${articleName}`,
+      newVersion,
+    );
+
+    if (status === HttpStatusCode.BadRequest) {
+      return Promise.reject("Bad request while editing article");
+    } else if (status === HttpStatusCode.NotFound) {
+      return Promise.reject("Article to edit not found");
+    }
+  }
+
+  async getArticleList(): Promise<string[]> {
+    const { data } = await axios.get<string[]>(`${this.url}/articles`);
+    return data;
+  }
 }
