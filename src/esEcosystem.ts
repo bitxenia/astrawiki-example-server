@@ -29,9 +29,12 @@ export class ExampleServerEcosystem implements ExampleServerNode {
   }
 
   async newArticle(articleName: string, articleContent: string): Promise<void> {
-    // if (name.length === 0) {
-    //   throw Error("Name cannot be empty");
-    // }
+    if (articleName.length === 0) {
+      throw Error("Name cannot be empty");
+    }
+
+    await this.articleRepository.newArticle(articleName, articleContent);
+
     // console.log(`Name: ${name}`);
     // const { status } = version
     //   ? await axios.post(`${URL}/articles/`, { name, version })

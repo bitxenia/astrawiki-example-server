@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from "axios";
 import { Article } from "./article";
-import { Version } from "@bitxenia/wiki-version-manager";
+import { newVersion, Version } from "@bitxenia/wiki-version-manager";
 
 type ArticleResponse = {
   versions: string;
@@ -27,5 +27,20 @@ export class ArticleRepository {
     const versions: Version[] = JSON.parse(data.versions);
 
     return new Article(articleName, versions);
+  }
+
+  async newArticle(articleName: string, articleContent: string): Promise<void> {
+    const version = newVersion("", articleContent);
+
+    const { status } = await axios.post(`${this.url}/articles`, {
+      name: articleName,
+      version,
+    });
+
+    if (status === HttpStatusCode.Conflict) {
+      return Promise.reject("Article already exists");
+    } else if (status !== HttpStatusCode.Created) {
+      return Promise.reject(`Server error: ${status}`);
+    }
   }
 }
