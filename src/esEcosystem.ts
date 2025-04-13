@@ -1,20 +1,20 @@
-import { ArticleInfo, ExampleServerImpl } from ".";
+import { ArticleInfo, ExampleServerNode } from ".";
 import { VersionManager } from "@bitxenia/wiki-version-manager";
 import { ArticleRepository } from "./articleRepository";
 
-export class ExampleServerEcosystem implements ExampleServerImpl {
+export class ExampleServerEcosystem implements ExampleServerNode {
   url: string;
   articleRepository: ArticleRepository;
   versionManager: VersionManager;
 
-  async start(): Promise<void> {
+  async start(url: string): Promise<void> {
     console.log("Initializing");
-    this.articleRepository = new ArticleRepository();
+    this.articleRepository = new ArticleRepository(url);
   }
 
   async getArticle(
     articleName: string,
-    articleVersionID?: string
+    articleVersionID?: string,
   ): Promise<ArticleInfo> {
     const article = await this.articleRepository.getArticle(articleName);
 
@@ -46,7 +46,7 @@ export class ExampleServerEcosystem implements ExampleServerImpl {
 
   async editArticle(
     articleName: string,
-    newArticleContent: string
+    newArticleContent: string,
   ): Promise<void> {
     // if (name.length === 0) {
     //   throw Error("No name given");
@@ -68,7 +68,7 @@ export class ExampleServerEcosystem implements ExampleServerImpl {
   async searchArticles(
     query: string,
     limit: number = 10,
-    offset: number = 0
+    offset: number = 0,
   ): Promise<string[]> {
     return [];
     // const { data } = await axios.get<string[]>(`${URL}/articles`, {

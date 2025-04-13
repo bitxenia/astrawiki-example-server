@@ -1,18 +1,14 @@
 import ExampleServerEcosystem from "./esEcosystem";
 
-export async function createExampleServerImplNode(): Promise<ExampleServerImpl> {
+export async function createExampleServerImplNode(
+  url: string,
+): Promise<ExampleServerNode> {
   const node = new ExampleServerEcosystem();
-  await node.start();
+  await node.start(url);
   return node;
 }
 
-export interface ExampleServerImpl {
-  /**
-   * Starts the Node
-   */
-
-  start(): Promise<void>;
-
+export interface ExampleServerNode {
   /**
    * Gets an existing article
    */
@@ -35,11 +31,6 @@ export interface ExampleServerImpl {
    * Gets the list of articles in the wiki
    */
   getArticleList(): Promise<string[]>;
-
-  /**
-   * Stops the Node
-   */
-  stop(): Promise<void>;
 }
 
 export type ArticleInfo = {
