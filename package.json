@@ -1,0 +1,39 @@
+{
+  "name": "astrawiki-example-server",
+  "version": "0.0.1",
+  "description": "Bitxenia wiki implementation on Example Server",
+  "homepage": "https://github.com/bitxenia/astrawiki-example-server#readme",
+  "bugs": {
+    "url": "https://github.com/bitxenia/astrawiki-example-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitxenia/astrawiki-example-server.git"
+  },
+  "license": "MIT",
+  "author": "Bitxenia",
+  "main": "./dist/src/index.js",
+  "module": "./dist/src/index.mjs",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.6",
+    "eslint-config-prettier": "^10.0.1",
+    "hardhat": "^0.0.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.1",
+    "prettier-plugin-tailwindcss": "^0.6.10",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "axios": "^1.8.4"
+  }
+}
