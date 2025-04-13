@@ -34,6 +34,7 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@bitxenia/wiki-version-manager": "^0.1.2",
     "axios": "^1.8.4"
   }
 }

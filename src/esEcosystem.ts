@@ -1,49 +1,31 @@
 import { ArticleInfo, ExampleServerImpl } from ".";
-import axios, { HttpStatusCode } from "axios";
-// import { Ecosystem, OptIn } from "./ecosystem";
-// import { Article } from "../articles/article";
-// import { Version } from "../articles/version";
-import env from "dotenv";
-
-env.config();
-
-const PORT = process.env.PORT ? process.env.PORT : 3001;
-const URL =
-  process.env.NEXT_PUBLIC_RUN_ENV === "prod"
-    ? process.env.NEXT_PUBLIC_EXAMPLE_SERVER_URL
-    : `http://localhost:${PORT}`;
-
-type ArticleResponse = {
-  versions: string;
-};
+import { VersionManager } from "@bitxenia/wiki-version-manager";
+import { ArticleRepository } from "./articleRepository";
 
 export class ExampleServerEcosystem implements ExampleServerImpl {
-  //   optIn?: OptIn = {
-  //     createWithContent: true,
-  //     optimizedSearch: true,
-  //   };
+  url: string;
+  articleRepository: ArticleRepository;
+  versionManager: VersionManager;
 
   async start(): Promise<void> {
     console.log("Initializing");
+    this.articleRepository = new ArticleRepository();
   }
 
   async getArticle(
     articleName: string,
-    articleVersionID?: string,
+    articleVersionID?: string
   ): Promise<ArticleInfo> {
-    return;
-    // if (name.length === 0) {
-    //   throw Error("No name given");
-    // }
-    // const { data, status } = await axios.get<ArticleResponse>(
-    //   `${URL}/articles/${name}`
-    // );
-    // if (status === HttpStatusCode.NotFound) {
-    //   throw Error("Article not found in ecosystem");
-    // } else if (status !== HttpStatusCode.Ok) {
-    //   throw Error("Server error");
-    // }
-    // return new Article(name, JSON.parse(data.versions));
+    const article = await this.articleRepository.getArticle(articleName);
+
+    const articleContent = article.getContent(articleVersionID);
+    const articleVersions = article.getVersions();
+
+    return {
+      name: articleName,
+      content: articleContent,
+      versionsInfo: articleVersions,
+    };
   }
 
   async newArticle(articleName: string, articleContent: string): Promise<void> {
@@ -64,7 +46,7 @@ export class ExampleServerEcosystem implements ExampleServerImpl {
 
   async editArticle(
     articleName: string,
-    newArticleContent: string,
+    newArticleContent: string
   ): Promise<void> {
     // if (name.length === 0) {
     //   throw Error("No name given");
@@ -86,7 +68,7 @@ export class ExampleServerEcosystem implements ExampleServerImpl {
   async searchArticles(
     query: string,
     limit: number = 10,
-    offset: number = 0,
+    offset: number = 0
   ): Promise<string[]> {
     return [];
     // const { data } = await axios.get<string[]>(`${URL}/articles`, {
