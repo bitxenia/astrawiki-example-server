@@ -1,4 +1,3 @@
-import env from "dotenv";
 import axios, { HttpStatusCode } from "axios";
 import { Article } from "./article";
 import { Version } from "@bitxenia/wiki-version-manager";
@@ -11,8 +10,6 @@ export class ArticleRepository {
   url: string;
 
   constructor(url: string) {
-    env.config();
-
     this.url = url;
   }
 

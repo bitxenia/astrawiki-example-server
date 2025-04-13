@@ -1,6 +1,6 @@
 {
   "name": "@bitxenia/astrawiki-example-server",
-  "version": "0.0.4",
+  "version": "0.0.1",
   "description": "Bitxenia wiki implementation on Example Server",
   "homepage": "https://github.com/bitxenia/astrawiki-example-server#readme",
   "bugs": {
